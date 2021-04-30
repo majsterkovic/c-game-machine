@@ -41,12 +41,21 @@ int GiveRandom(int start, int ile_liczb) {
 
 }
 
+int GetLevel() {
+	int level;
+	printf("[0] Latwy\n[1] Trudny\n\nWybierz poziom trudnosci: ");
+	scanf(" %d", &level);
+	system("cls");
+	return level;
+	
+}
+
 
 
 void WypiszLitery(int alfabet[])
 {
 	for (int i = 0; i < 26; i++) {
-		if (alfabet[i] == 1) {
+		if (alfabet[i] > 0) {
 			SetConsoleColor(TEXT_MAGENTA);
 			printf(" %c", 35);
 			SetConsoleColor(15);
@@ -88,17 +97,19 @@ void WypiszHaslo(char haslo[2][30])
 	printf("\n");
 }
 
-void WczytajLitere(int alfabet[])
+void WczytajLitere(int poziom, int alfabet[])
 {
 	printf("Podaj swoja litere: ");
-	fflush(stdin);
+
 	char litera;
-	scanf("%c", &litera);
+	scanf(" %c", &litera);
 	getchar();
 	litera = toupper(litera);
-	if (alfabet[(int)litera - 65] == 1) {
-		printf("\nLitera zostala juz wczesniej wczytana, podaj kolejna.\n");
-		WczytajLitere(alfabet);
+	if (poziom == 0) {
+		if (alfabet[(int)litera - 65] == 1) {
+			printf("\nLitera zostala juz wczesniej wczytana, podaj kolejna.\n");
+			WczytajLitere(poziom, alfabet);
+		}
 	}
 	alfabet[(int)litera - 65]++;
 }
@@ -130,9 +141,9 @@ int hasloOdgadniete(char haslo[2][30])
 
 }
 
-void Wisielec(int poziom)
+void Wisielec()
 {
-	
+	int poziom = GetLevel();
 	int alfabet[26];
 	memset(alfabet, 0, 26*sizeof(int));
 	int proby = 8;
@@ -152,7 +163,8 @@ void Wisielec(int poziom)
 
 		if (proby == 0) {
 			SetConsoleColor(TEXT_RED);
-			printf("\nWykorzystano wszystkie proby, umierasz\n");
+			printf("\nWykorzystano wszystkie proby, umierasz.\n");
+			printf("Haslo, ktore trzeba bylo odgadnac: %s", haslo[0]);
 			break;
 		}
 		else if (hasloOdgadniete(haslo))
@@ -161,10 +173,11 @@ void Wisielec(int poziom)
 			printf("\nWygrana!\n");
 			break;
 		}
-
-		WypiszLitery(alfabet);
+		if (poziom == 0) {
+			WypiszLitery(alfabet);
+		}
 		
-		WczytajLitere(alfabet);
+		WczytajLitere(poziom, alfabet);
 		OdkryjLitere(proby, haslo, alfabet);
 		system("cls");
 
@@ -186,7 +199,7 @@ int main()
 	//printf("Witaj!\n\nGry do wyboru:\n1. Statki\n2. Cztery w linii\n3. Wisielec\n4. Kolko i krzyzyk\n\nPodaj nr gry, w ktora chcesz zagrac: ");
 	//int wybor;
 
-	Wisielec(1);
+	Wisielec();
 	//scanf("%d", &wybor);
 	//switch (wybor) {
 	//case 1:
