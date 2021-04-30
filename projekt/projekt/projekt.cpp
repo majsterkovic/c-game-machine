@@ -140,7 +140,7 @@ void Wisielec(int poziom)
 							"INFORMATYKA",
 							"PROGRAMOWANIE",
 							"NISKOPOZIOMOWE",
-							"JANKOWSKA NIE UMIE UCZYC",
+							"MATEMATYKA",
 							"GUMIAKI"
 	};
 	char haslo[2][30];  //{ "INFA", "0000" }
