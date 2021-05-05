@@ -4,12 +4,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 
 #define TEXT_DARKGRAY 0x8
 #define TEXT_MAGENTA 0x5
 #define TEXT_RED 0xC
 #define TEXT_GREEN 0xA
 #define TEXT_CYAN 0x3
+#define TEXT_LIGHTGRAY 0x7
+#define TEXT_YELLOW 0xE
+#define TEXT_BROWN 0x6
 
 void SetWindow(int Width, int Height)
 {
@@ -64,10 +68,11 @@ void WypiszLitery(int alfabet[])
 			printf(" %c", i + 65);
 		}
 	}
-	printf("\n");
+	printf("\n\n");
 }
 
 void RysujWisielca(int proba) {
+	SetConsoleColor(TEXT_YELLOW);
 	char wisielec[9][200] = { "      \n        \n        \n         \n         \n        \n     \n    _____",
 							"      \n     |    \n     |      \n     |       \n     |       \n     |      \n     |\n    _|___",
 							"      _______\n     |/      \n     |      \n     |       \n     |       \n     |      \n     |\n    _|___",
@@ -78,6 +83,8 @@ void RysujWisielca(int proba) {
 							"      _______\n     |/      |\n     |      (_)\n     |      \\|/\n     |       |\n     |      / \n     |\n    _|___",
 							"      _______\n     |/      |\n     |      (_)\n     |      \\|/\n     |       |\n     |      / \\\n     |\n    _|___" };
 	printf("%s\n", wisielec[8-proba]);
+	printf("\n");
+	SetConsoleColor(TEXT_LIGHTGRAY);
 }
 
 void WypiszHaslo(char haslo[2][30])
@@ -183,10 +190,85 @@ void Wisielec()
 
 
 	}
+}
+
+
+
+void WypiszPlansze(char plansza[3][3]) {
+	SetConsoleColor(TEXT_CYAN);
+	printf("\n     a     b     c\n");
+	for (int i = 0; i < 3; i++) {
+		printf("        |     |     \n");
+		printf(" %d   %c  |  %c  |  %c  \n", i, plansza[i][0], plansza[i][1], plansza[i][2]);
+		if (i != 2) {
+			printf("   _____|_____|_____\n");
+		}
+	}
+	printf("        |     |     \n");
+	SetConsoleColor(TEXT_LIGHTGRAY);
+}
+
+bool SprawdzWygrana(int k, int w)
+{
+	if ()
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Ruch(char plansza[3][3], int wiersz, int kolumna, char znak) {
+	plansza[wiersz][kolumna] = znak;
+
+	return SprawdzWygrana(wiersz, kolumna);
+}
+
+void WczytajWybor(int &wiersz, int &kolumna, char plansza[3][3]) {
+	char wsp1, wsp2;
+	printf("Podaj wspolrzedne: ");
+	scanf(" %c%c", &wsp1, &wsp2);
+	
+	if ((wsp1 > 47) && (wsp1 < 51)) {
+		wiersz = (int)wsp1 - 48;
+		kolumna = (int)wsp2 - 97;
+	}
+	else
+	{
+		wiersz = (int)wsp2 - 48;
+		kolumna = (int)wsp1 - 97;
+	}
+}
+
+void LosowanieKomputera(int &wiersz, int &kolumna, char plansza[3][3]) {
+	int wiersz = GiveRandom(0, 3);
+	int kolumna = GiveRandom(0, 3);
+	if (plansza[wiersz][kolumna] != ' ') {
+		LosowanieKomputera(plansza);
+	}
+}
 
 
 
 
+void Kolko() {
+	char plansza[3][3];
+	int wiersz, kolumna;
+	char KOMPUTER = 'O';
+	char GRACZ = 'X';
+	memset(&plansza, ' ', sizeof plansza);
+	
+	while (1) {
+		WypiszPlansze(plansza);
+		WczytajWybor(wiersz, kolumna, plansza);
+		Ruch(plansza, wiersz, kolumna, GRACZ);
+		LosowanieKomputera(wiersz, kolumna, plansza);
+		Ruch(plansza, wiersz, kolumna, KOMPUTER);
+
+		
+	}
 }
 
 
@@ -199,7 +281,8 @@ int main()
 	//printf("Witaj!\n\nGry do wyboru:\n1. Statki\n2. Cztery w linii\n3. Wisielec\n4. Kolko i krzyzyk\n\nPodaj nr gry, w ktora chcesz zagrac: ");
 	//int wybor;
 
-	Wisielec();
+	//Wisielec();
+	Kolko();
 	//scanf("%d", &wybor);
 	//switch (wybor) {
 	//case 1:
