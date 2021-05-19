@@ -54,6 +54,15 @@ int GetLevel() {
 	
 }
 
+void Wait(int time) {
+	for (int i = 0; i < time; i++) {
+		printf(".");
+		Sleep(555);
+	}
+	printf("\n");
+
+}
+
 
 
 void WypiszLitery(int alfabet[])
@@ -89,7 +98,7 @@ void RysujWisielca(int proba) {
 
 void WypiszHaslo(char haslo[2][30])
 {
-	for (int i = 0; i < strlen(haslo[0]); i++)
+	for (unsigned int i = 0; i < strlen(haslo[0]); i++)
 	{
 		if (haslo[1][i] == '1')
 		{
@@ -125,7 +134,7 @@ void OdkryjLitere(int &proby, char haslo[2][30], int alfabet[])
 {
 	int znaleziono = 0;
 	for (int i = 0; i < 26; i++) {
-		for (int j = 0; j < strlen(haslo[0]); j++) {
+		for (unsigned int j = 0; j < strlen(haslo[0]); j++) {
 			if ((haslo[0][j] == (char)(i + 65) && alfabet[i] == 1) && haslo[1][j] == '0') {
 				haslo[1][j] = '1';
 				znaleziono = 1;
@@ -139,7 +148,7 @@ void OdkryjLitere(int &proby, char haslo[2][30], int alfabet[])
 
 int hasloOdgadniete(char haslo[2][30])
 {
-	for (int i = 0; i < strlen(haslo[1]);  i++) {
+	for (unsigned int i = 0; i < strlen(haslo[1]);  i++) {
 		if (haslo[1][i] == '0') {
 			return 0;
 		}
@@ -195,6 +204,7 @@ void Wisielec()
 
 
 void WypiszPlansze(char plansza[3][3]) {
+	system("cls");
 	SetConsoleColor(TEXT_CYAN);
 	printf("\n     a     b     c\n");
 	for (int i = 0; i < 3; i++) {
@@ -208,22 +218,35 @@ void WypiszPlansze(char plansza[3][3]) {
 	SetConsoleColor(TEXT_LIGHTGRAY);
 }
 
-bool SprawdzWygrana(int k, int w)
+bool SprawdzWygrana(char plansza[3][3], int w, int k)
 {
-	if ()
+	if ((plansza[w][0] == plansza[w][1]) && (plansza[w][1] == plansza[w][2]))
 	{
 		return true;
 	}
-	else
+	if ((plansza[0][k] == plansza[1][k]) && (plansza[1][k] == plansza[2][k]))
 	{
-		return false;
+		return true;
 	}
+	if ((k+w)%2==0)
+	{
+		if ((plansza[0][0] == plansza[2][2]) && (plansza[1][1] == plansza[2][2]))
+		{
+			return true;
+		}
+		if ((plansza[0][2] == plansza[2][0]) && (plansza[1][1] == plansza[0][2]))
+		{
+			return true;
+		}
+	}
+	return false;
+
 }
 
 bool Ruch(char plansza[3][3], int wiersz, int kolumna, char znak) {
 	plansza[wiersz][kolumna] = znak;
 
-	return SprawdzWygrana(wiersz, kolumna);
+	return SprawdzWygrana(plansza, wiersz, kolumna);
 }
 
 void WczytajWybor(int &wiersz, int &kolumna, char plansza[3][3]) {
@@ -243,14 +266,12 @@ void WczytajWybor(int &wiersz, int &kolumna, char plansza[3][3]) {
 }
 
 void LosowanieKomputera(int &wiersz, int &kolumna, char plansza[3][3]) {
-	int wiersz = GiveRandom(0, 3);
-	int kolumna = GiveRandom(0, 3);
+	wiersz = GiveRandom(0, 3);
+	kolumna = GiveRandom(0, 3);
 	if (plansza[wiersz][kolumna] != ' ') {
-		LosowanieKomputera(plansza);
+		LosowanieKomputera(wiersz, kolumna, plansza);
 	}
 }
-
-
 
 
 void Kolko() {
@@ -260,18 +281,106 @@ void Kolko() {
 	char GRACZ = 'X';
 	memset(&plansza, ' ', sizeof plansza);
 	
-	while (1) {
+	while (1)
+	{
 		WypiszPlansze(plansza);
-		WczytajWybor(wiersz, kolumna, plansza);
-		Ruch(plansza, wiersz, kolumna, GRACZ);
-		LosowanieKomputera(wiersz, kolumna, plansza);
-		Ruch(plansza, wiersz, kolumna, KOMPUTER);
 
+		WczytajWybor(wiersz, kolumna, plansza);
+		if (Ruch(plansza, wiersz, kolumna, GRACZ)) {
+			WypiszPlansze(plansza);
+			printf("Wygrales\n");
+			break;
+
+		}
+
+		LosowanieKomputera(wiersz, kolumna, plansza);
+		Wait(3);
+		if (Ruch(plansza, wiersz, kolumna, KOMPUTER)) {
+			WypiszPlansze(plansza);
+			printf("Przegrales\n");
+			break;
+		}
 		
 	}
 }
 
+//......................................................
 
+void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10]) {
+
+	printf("\n    Twoja plansza:\t\t\t  Plansza przeciwnika:\n\n");
+	printf("  ");
+	for (int g = 0; g < 10; g++) {
+		//cout << g << " ";
+		printf("%d ", g);
+	}
+	printf("\t\t\t   ");
+	for (int g = 0; g < 10; g++) {
+		//cout << g << " ";
+		printf("%d ", g);
+	}
+	for (int a = 0; a < 10; a++) {
+		//cout << endl << a << " ";
+		printf("\n%d ", a);
+		for (int b = 0; b < 10; b++) {
+			//cout << plansza[a][b] << " ";
+			printf("%c ", plansza_gracza[a][b]);
+		}
+		printf("\t\t\t %d ", a);
+		for (int b = 0; b < 10; b++) {
+			//cout << plansza[a][b] << " ";
+			printf("%c ", plansza_strzalow[a][b]);
+		}
+	}
+
+	printf("\n");
+}
+
+void Statki() {
+
+	char plansza_gracza[10][10] =
+	{
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177}
+	};
+
+	char plansza_komputera[10][10] =
+	{
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177},
+			{177,177,177,177,177,177,177,177,177,177}
+	};
+	char plansza_strzalow[10][10] =
+	{
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'},
+			{'x','x','x','x','x','x','x','x','x','x'}
+	};
+
+	WypiszStatki(plansza_gracza, plansza_strzalow);
+}
 
 int main()
 {
@@ -282,7 +391,8 @@ int main()
 	//int wybor;
 
 	//Wisielec();
-	Kolko();
+	//Kolko();
+	Statki();
 	//scanf("%d", &wybor);
 	//switch (wybor) {
 	//case 1:
