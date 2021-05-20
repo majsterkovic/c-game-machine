@@ -321,57 +321,70 @@ void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10]) {
 	printf("\n    Twoja plansza:\t\t\t  Plansza przeciwnika:\n\n");
 	printf("  ");
 	for (int g = 0; g < 10; g++) {
-		//cout << g << " ";
 		printf("%d ", g);
 	}
 	printf("\t\t\t   ");
 	for (int g = 0; g < 10; g++) {
-		//cout << g << " ";
+		SetConsoleColor(TEXT_LIGHTGRAY);
 		printf("%d ", g);
 	}
 	for (int a = 0; a < 10; a++) {
-		//cout << endl << a << " ";
+		SetConsoleColor(TEXT_LIGHTGRAY);
 		printf("\n%d ", a);
 		for (int b = 0; b < 10; b++) {
-			//cout << plansza[a][b] << " ";
-			if (plansza_gracza[a][b] == 5)
+			switch (plansza_gracza[a][b])
 			{
+			case 9:
+				SetConsoleColor(TEXT_RED);
+				printf("%c ", 35);
+				break;
+			case 8:
+				SetConsoleColor(TEXT_DARKGRAY);
+				printf("%c ", 207);
+				break;
+			case 0:
+				SetConsoleColor(TEXT_CYAN);
 				printf("%c ", 177);
-			}
-			else if((plansza_gracza[a][b] > 0) && (plansza_gracza[a][b] <= 9))
-			{
-				printf("%d ", plansza_gracza[a][b]);
-			}
-			else
-			{
+				break;
+			case 5:
+				SetConsoleColor(TEXT_CYAN);
 				printf("%c ", 177);
+				break;
+			default:
+				SetConsoleColor(TEXT_YELLOW);
+				printf("%c ", 88);
+				break;
 			}
 			
 		}
+		SetConsoleColor(TEXT_LIGHTGRAY);
 		printf("\t\t\t %d ", a);
-		//for (int b = 0; b < 10; b++) {
-		//	//cout << plansza[a][b] << " ";
-		//	if (plansza_strzalow[a][b] == 1)
-		//	{
-		//		printf("%c ", 'X');
-		//	}
-		//	else
-		//	{
-		//		printf("%c ", 177);
-		//	}
-		//	
-		//}
-		for (int b = 0; b < 10; b++) {
-			//cout << plansza[a][b] << " ";
-			if ((plansza_strzalow[a][b] > 0) && (plansza_strzalow[a][b] < 9))
-			{
-				printf("%d ", plansza_strzalow[a][b]);
-			}
-			else
-			{
-				printf("%c ", 177);
-			}
 
+		for (int b = 0; b < 10; b++) {
+			switch (plansza_strzalow[a][b])
+			{
+			case 9:
+				SetConsoleColor(TEXT_RED);
+				printf("%c ", 35);
+				break;
+			case 8:
+				SetConsoleColor(TEXT_DARKGRAY);
+				printf("%c ", 207);
+				break;
+			case 0:
+				SetConsoleColor(TEXT_CYAN);
+				printf("%c ", 177);
+				break;
+			case 5:
+				SetConsoleColor(TEXT_CYAN);
+				printf("%c ", 177);
+				break;
+			default:
+				SetConsoleColor(TEXT_YELLOW);
+				printf("%c ", 88);
+				break;
+			}
+			SetConsoleColor(TEXT_LIGHTGRAY);
 		}
 	}
 
@@ -396,14 +409,6 @@ void ZerujPlansze(char plansza[10][10]) {
 
 }
 
-struct Statek
-{
-	int maszty;
-	int wsp[5][2];
-};
-
-struct Statek lista_statkow[10];
-
 void TworzStatek(int maszty, char plansza[10][10])
 {
 	int ile_prob = 0;
@@ -422,7 +427,6 @@ void TworzStatek(int maszty, char plansza[10][10])
 		poziomo = GiveRandom(0, 2);
 
 		if (poziomo == 1) {
-			//plansza[9][10-maszty]
 			wiersz = GiveRandom(0, 10);
 			kolumna = GiveRandom(0, 10 - maszty + 1);
 			for (int i = 0; i < maszty; i++) {
@@ -442,13 +446,11 @@ void TworzStatek(int maszty, char plansza[10][10])
 					break;
 				}
 			}
-			//plansza[10-maszty][9]
 		}
 	}
 
 	if (poziomo == 1)
 	{
-		//plansza[9][10-maszty]
 		for (int j = - 1; j <= 1; j++)
 		{
 			if (CzyNalezyDoPlanszy(wiersz+j, kolumna - 1))
@@ -464,8 +466,7 @@ void TworzStatek(int maszty, char plansza[10][10])
 			}
 
 			plansza[wiersz][kolumna + i] = maszty;
-			//lista_statkow[x].wsp[i][0] = wiersz;
-			//lista_statkow[x].wsp[i][1] = kolumna+i;
+	
 
 			if (CzyNalezyDoPlanszy(wiersz + 1, kolumna + i))
 			{
@@ -499,8 +500,6 @@ void TworzStatek(int maszty, char plansza[10][10])
 			}
 
 			plansza[wiersz + i][kolumna] = maszty;
-			//lista_statkow[x].wsp[i][0] = wiersz + i;
-			//lista_statkow[x].wsp[i][1] = kolumna;
 
 			if (CzyNalezyDoPlanszy(wiersz + i, kolumna + 1))
 			{
@@ -516,7 +515,6 @@ void TworzStatek(int maszty, char plansza[10][10])
 			}
 		}
 
-		//plansza[10-maszty][9]
 	}
 }
 
@@ -529,56 +527,10 @@ void RozrysujStatki(char plansza[10][10])
 			TworzStatek(i+1, plansza);
 		}
 	}
-	/*for (int i = 0; i < 10; i++) {
-		if (i < 4) {
-			lista_statkow[i].maszty = 1;
-		}
-		else {
-			if (i < 7) {
-				lista_statkow[i].maszty = 2;
-			}
-			else {
-				if (i < 9) {
-					lista_statkow[i].maszty = 3;
-				}
-				else {
-					lista_statkow[i].maszty = 4;
-				}
-			}
-		}
-		TworzStatek(i, lista_statkow[i].maszty, plansza);
-	}*/
 
 }
 
-//void Komunikat(int typ)
-//{
-//	if (typ != STATEK)
-//	{
-//		printf("Pudlo\n");
-//	}
-//}
 
-//bool SprawdzanieOJeden(int w, int k, char plansza[10][10])
-//{
-//	for (int i = -1; i <= 1; i++)
-//	{
-//		for (int j = -1; j <= 1; j++)
-//		{
-//			if (i == 0 && j == 0) {
-//				continue;
-//			}
-//			if (CzyNalezyDoPlanszy(w + i, k + i))
-//			{
-//				if ((plansza[w + i][k + j] == STATEK)|| (plansza[w + i][k + j] == TRAFIONY))
-//				{
-//					return true;
-//				}
-//			}
-//		}
-//	}
-//	return false;
-//}
 
 
 bool CzyZatopiony(int maszty, int wiersz, int kolumna, char plansza[10][10])
@@ -651,12 +603,94 @@ bool CzyZatopiony(int maszty, int wiersz, int kolumna, char plansza[10][10])
 	return true;
 }
 
+struct pozostalo_statkow {
+	int gracza;
+	int komputera;
+};
+
+void Obtaczanie(int maszty, int wiersz, int kolumna, char plansza[10][10])
+{
+	bool poziomo = true;
+	while (plansza[wiersz - 1][kolumna] == TRAFIONY) {
+		wiersz--;
+	}
+	while (plansza[wiersz][kolumna - 1] == TRAFIONY) {
+		kolumna--;
+	}
+	if (plansza[wiersz + 1][kolumna] == TRAFIONY) {
+		poziomo = false;
+	}
+
+	if (poziomo)
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz + j, kolumna - 1))
+			{
+				plansza[wiersz + j][kolumna - 1] = PUDLO;
+			}
+		}
+		for (int i = 0; i < maszty; i++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + i))
+			{
+				plansza[wiersz - 1][kolumna + i] = PUDLO;
+			}
+
+
+			if (CzyNalezyDoPlanszy(wiersz + 1, kolumna + i))
+			{
+				plansza[wiersz + 1][kolumna + i] = PUDLO;
+			}
+		}
+		for (int j = -1; j <= +1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz + j, kolumna + maszty))
+			{
+				plansza[wiersz + j][kolumna + maszty] = PUDLO;
+			}
+		}
+
+	}
+	else
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + j))
+			{
+				plansza[wiersz - 1][kolumna + j] = PUDLO;
+			}
+		}
+
+		for (int i = 0; i < maszty; i++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz + i, kolumna - 1))
+			{
+				plansza[wiersz + i][kolumna - 1] = PUDLO;
+			}
 
 
 
+			if (CzyNalezyDoPlanszy(wiersz + i, kolumna + 1))
+			{
+				plansza[wiersz + i][kolumna + 1] = PUDLO;
+			}
+		}
+
+		for (int j = -1; j <= +1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz + maszty, kolumna + j))
+			{
+				plansza[wiersz + maszty][kolumna + j] = PUDLO;
+			}
+		}
+
+	}
+}
 
 // plansza gracza
-void StrzelanieKomputera0(char plansza[10][10]) {
+void StrzelanieKomputera0(char plansza[10][10], struct pozostalo_statkow *P)
+{
 
 	int wiersz = GiveRandom(0, 10);
 	int kolumna = GiveRandom(0, 10);
@@ -669,119 +703,197 @@ void StrzelanieKomputera0(char plansza[10][10]) {
 	}
 	if ((plansza[wiersz][kolumna] == 0) || (plansza[wiersz][kolumna] == 5)) {
 		plansza[wiersz][kolumna] = PUDLO;
-		printf("Pudlo komputera\n");
+		printf("\nPudlo komputera\n");
 	}
 	else {
 		int maszty = plansza[wiersz][kolumna];
 		plansza[wiersz][kolumna] = TRAFIONY;
+		(*P).gracza--;
 
 
 		if (!CzyZatopiony(maszty, wiersz, kolumna, plansza))
 		{
 			//niezatopuiony
-			printf("Komputer trafil w Twoj statek\n");
+			printf("\nKomputer trafil w Twoj statek\n");
 
 		}
 		else {
-			//panierowanie
-			int poziomo = 1;
-			while (plansza[wiersz-1][kolumna] == TRAFIONY) {
-				wiersz--;
-				poziomo = 0;
-			}
-			while (plansza[wiersz][kolumna-1] == TRAFIONY) {
-				kolumna--;
-			}
-
-			printf("%d %d %d\n", wiersz, kolumna, poziomo);
-			if (poziomo == 0)
-			{
-				//plansza[9][10-maszty]
-				for (int j = -1; j <= 1; j++)
-				{
-					if (CzyNalezyDoPlanszy(wiersz + j, kolumna - 1))
-					{
-						plansza[wiersz + j][kolumna - 1] = PUDLO;
-					}
-				}
-				for (int i = 0; i < maszty; i++)
-				{
-					if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + i))
-					{
-						plansza[wiersz - 1][kolumna + i] = PUDLO;
-					}
-
-					//lista_statkow[x].wsp[i][0] = wiersz;
-					//lista_statkow[x].wsp[i][1] = kolumna+i;
-
-					if (CzyNalezyDoPlanszy(wiersz + 1, kolumna + i))
-					{
-						plansza[wiersz + 1][kolumna + i] = PUDLO;
-					}
-				}
-				for (int j = -1; j <= +1; j++)
-				{
-					if (CzyNalezyDoPlanszy(wiersz + j, kolumna + maszty))
-					{
-						plansza[wiersz + j][kolumna + maszty] = PUDLO;
-					}
-				}
-
-			}
-			else
-			{
-				for (int j = -1; j <= 1; j++)
-				{
-					if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + j))
-					{
-						plansza[wiersz - 1][kolumna + j] = PUDLO;
-					}
-				}
-
-				for (int i = 0; i < maszty; i++)
-				{
-					if (CzyNalezyDoPlanszy(wiersz + i, kolumna - 1))
-					{
-						plansza[wiersz + i][kolumna - 1] = PUDLO;
-					}
-
-					//lista_statkow[x].wsp[i][0] = wiersz + i;
-					//lista_statkow[x].wsp[i][1] = kolumna;
-
-					if (CzyNalezyDoPlanszy(wiersz + i, kolumna + 1))
-					{
-						plansza[wiersz + i][kolumna + 1] = PUDLO;
-					}
-				}
-
-				for (int j = -1; j <= +1; j++)
-				{
-					if (CzyNalezyDoPlanszy(wiersz + maszty, kolumna + j))
-					{
-						plansza[wiersz + maszty][kolumna + j] = PUDLO;
-					}
-				}
-
-				//plansza[10-maszty][9]
-			}
-			printf("Komputer zatopil Ci statek\n");
+			Obtaczanie(maszty, wiersz, kolumna, plansza);
+			printf("\nKomputer zatopil Ci statek\n");
 		}
-		
+
 	}
-	
+
 }
 
-struct pozostalo_statkow {
-	int gracza;
-	int komputera;
-};
+void StrzelanieKomputera1(char plansza[10][10], struct pozostalo_statkow* P, int wspol[3][2])
+{
+	int x = 0;
+	int kolumna = wspol[x][1];
+	int wiersz = wspol[x][0];
+	int w, k;
+
+	int ile = 0;
+
+	if (kolumna != -1) {
+		do {
+			int kierunek = GiveRandom(0, 4);
+
+			ile++;
+			if (ile == 1000)
+			{
+				x++;
+				printf("x: %d", x);
+				ile = 0;
+				kolumna = wspol[x][1];
+				wiersz = wspol[x][0];
+			}
+
+
+			switch (kierunek)
+			{
+			case 0:
+				k = -1;
+				w = 0;
+				break;
+			case 1:
+				k = 1;
+				w = 0;
+				break;
+			case 2:
+				k = 0;
+				w = -1;
+				break;
+			case 3:
+				k = 0;
+				w = 1;
+				break;
+			}
+		} while ((!CzyNalezyDoPlanszy(wiersz + w, kolumna + k)) || (plansza[wiersz + w][kolumna + k] == TRAFIONY) || (plansza[wiersz + w][kolumna + k] == PUDLO));
+
+		//printf("koniec while'a\n");
+		wiersz = wiersz + w;
+		kolumna = kolumna + k;
+	}
+	else {
+		do
+		{
+			wiersz = GiveRandom(0, 10);
+			kolumna = GiveRandom(0, 10);
+		} while (plansza[wiersz][kolumna] >= 8);
+	}
+	//printf("strzelam: %d %d\n", wiersz, kolumna);
+	if ((plansza[wiersz][kolumna] == 0) || (plansza[wiersz][kolumna] == OTOCZENIE)) {
+		plansza[wiersz][kolumna] = PUDLO;
+		printf("\nPudlo komputera\n");
+		//return wspol;
+	}
+	else {
+		int maszty = plansza[wiersz][kolumna];
+		plansza[wiersz][kolumna] = TRAFIONY;
+		(*P).gracza--;
+		if (!CzyZatopiony(maszty, wiersz, kolumna, plansza))
+		{
+			//niezatopuiony
+			printf("\nKomputer trafil w Twoj statek\n");
+			//return { wiersz, kolumna };
+			//wspol = { wiersz, kolumna };
+			wspol[2][0] = wspol[1][0];
+			wspol[2][1] = wspol[1][1];
+
+			wspol[1][0] = wspol[0][0];
+			wspol[1][1] = wspol[0][1];
+
+
+			wspol[0][0] = wiersz;
+			wspol[0][1] = kolumna;
+
+		}
+		else {
+			Obtaczanie(maszty, wiersz, kolumna, plansza);
+			printf("\nKomputer zatopil Ci statek\n");
+			for (int i = 0; i < 3; i++)
+			{
+				wspol[i][0] = -1;
+				wspol[i][1] = -1;
+			}
+		}
+	}
+}
+
+void StrzelanieGracza(char plansza[10][10], struct pozostalo_statkow* P)
+{
+	int wiersz, kolumna;
+	bool zle = false;
+	
+	do
+	{
+		zle = false;
+		printf("\nPodaj wiersz i kolumne rozdzielone spacja: ");
+		scanf(" %d %d", &wiersz, &kolumna);
+		if (CzyNalezyDoPlanszy(wiersz, kolumna) == false)
+		{
+			printf("\nWspolrzedne poza plansza\n");
+			zle = true;
+		}
+		else if ((plansza[wiersz][kolumna] == TRAFIONY)|| (plansza[wiersz][kolumna] == PUDLO))
+		{
+			printf("\nJuz tu strzelales\n");
+			zle = true;
+		}
+	} while (zle);
+
+	if ((plansza[wiersz][kolumna] == 0) || (plansza[wiersz][kolumna] == 5)) {
+		plansza[wiersz][kolumna] = PUDLO;
+		printf("Pudlo\n");
+	}
+	else {
+		int maszty = plansza[wiersz][kolumna];
+		plansza[wiersz][kolumna] = TRAFIONY;
+		(*P).komputera--;
+
+
+		if (!CzyZatopiony(maszty, wiersz, kolumna, plansza))
+		{
+			//niezatopuiony
+			printf("\nTrafiles w statek komputera\n");
+
+		}
+		else {
+			Obtaczanie(maszty, wiersz, kolumna, plansza);
+			printf("\nZatopiles statek komputera\n");
+		}
+
+	}
+	
+
+}
+
+bool CzyKoniecStatkow(struct pozostalo_statkow* P)
+{
+	if ((*P).gracza == 0)
+	{
+		printf("\nPrzegrales\n");
+		return true;
+	}
+	else if ((*P).komputera == 0)
+	{
+		printf("\nWygrales!\n");
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 
 void Statki() {
 
 	// 4 x 1   3 x 2   2 x 3 1 x 4
-
-
-	struct pozostalo_statkow P = { 20, 20 };
+	int poziom = GetLevel();
+	struct pozostalo_statkow* P = (struct pozostalo_statkow*)malloc(sizeof(struct pozostalo_statkow));
+	*P = { 20, 20 };
 
 	//0 nie ma, 1 jest, 2 nic nie moze byc
 	char plansza_gracza[10][10] =
@@ -811,30 +923,27 @@ void Statki() {
 			{0,0,0,0,0,0,0,0,0,0},
 			{0,0,0,0,0,0,0,0,0,0}
 	};
-	char plansza_strzalow[10][10] =
-	{
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'},
-			{'x','x','x','x','x','x','x','x','x','x'}
-	};
+	int ostatni_traf[3][2] = { { -1, -1 }, {-1, -1}, {-1, -1} };
 	RozrysujStatki(plansza_gracza);
 	RozrysujStatki(plansza_komputera);
 	WypiszStatki(plansza_gracza, plansza_komputera);
-	int a;
-	while (true) {
-		StrzelanieKomputera0(plansza_gracza);
+	bool koniec = false;
+	while (!koniec) {
+		
+		StrzelanieGracza(plansza_komputera, P);
+		printf("Komputer strzela");
+		Wait(3);
+		if (poziom == 0) {
+			StrzelanieKomputera0(plansza_gracza, P);
+		}
+		else {
+			StrzelanieKomputera1(plansza_gracza, P, ostatni_traf);
+		}
+		Sleep(700);
+		system("cls");
 		WypiszStatki(plansza_gracza, plansza_komputera);
-		scanf(" %d", &a);
+		koniec = CzyKoniecStatkow(P);
 	}
-	WypiszStatki(plansza_gracza, plansza_komputera);
-	printf("koniec");
 }
 
 int main()
