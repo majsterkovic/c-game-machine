@@ -15,6 +15,15 @@
 #define TEXT_YELLOW 0xE
 #define TEXT_BROWN 0x6
 
+#define PUSTE 0
+//#define STATEK 1
+#define OTOCZENIE 5
+#define TRAFIONY 9
+#define PUDLO 8
+
+
+void Statki();
+
 void SetWindow(int Width, int Height)
 {
 	_COORD coord;
@@ -306,6 +315,7 @@ void Kolko() {
 
 //......................................................
 
+
 void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10]) {
 
 	printf("\n    Twoja plansza:\t\t\t  Plansza przeciwnika:\n\n");
@@ -324,46 +334,482 @@ void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10]) {
 		printf("\n%d ", a);
 		for (int b = 0; b < 10; b++) {
 			//cout << plansza[a][b] << " ";
-			printf("%c ", plansza_gracza[a][b]);
+			if (plansza_gracza[a][b] == 5)
+			{
+				printf("%c ", 177);
+			}
+			else if((plansza_gracza[a][b] > 0) && (plansza_gracza[a][b] <= 9))
+			{
+				printf("%d ", plansza_gracza[a][b]);
+			}
+			else
+			{
+				printf("%c ", 177);
+			}
+			
 		}
 		printf("\t\t\t %d ", a);
+		//for (int b = 0; b < 10; b++) {
+		//	//cout << plansza[a][b] << " ";
+		//	if (plansza_strzalow[a][b] == 1)
+		//	{
+		//		printf("%c ", 'X');
+		//	}
+		//	else
+		//	{
+		//		printf("%c ", 177);
+		//	}
+		//	
+		//}
 		for (int b = 0; b < 10; b++) {
 			//cout << plansza[a][b] << " ";
-			printf("%c ", plansza_strzalow[a][b]);
+			if ((plansza_strzalow[a][b] > 0) && (plansza_strzalow[a][b] < 9))
+			{
+				printf("%d ", plansza_strzalow[a][b]);
+			}
+			else
+			{
+				printf("%c ", 177);
+			}
+
 		}
 	}
 
 	printf("\n");
 }
 
+bool CzyNalezyDoPlanszy(int x, int y)
+{
+	if ((x < 0) || (y < 0) || (x > 9) || (y > 9))
+	{
+		return false;
+	}
+	return true;
+}
+
+void ZerujPlansze(char plansza[10][10]) {
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			plansza[i][j] = 0;
+		}
+	}
+
+}
+
+struct Statek
+{
+	int maszty;
+	int wsp[5][2];
+};
+
+struct Statek lista_statkow[10];
+
+void TworzStatek(int maszty, char plansza[10][10])
+{
+	int ile_prob = 0;
+	int poziomo;
+	int wiersz, kolumna;
+	bool flag = false;
+
+	while (!flag)
+	{
+		ile_prob++;
+		if (ile_prob > 1000000) {
+			system("cls");
+			Statki();
+		}
+		flag = true;
+		poziomo = GiveRandom(0, 2);
+
+		if (poziomo == 1) {
+			//plansza[9][10-maszty]
+			wiersz = GiveRandom(0, 10);
+			kolumna = GiveRandom(0, 10 - maszty + 1);
+			for (int i = 0; i < maszty; i++) {
+				if (plansza[wiersz][kolumna + i] != 0) {
+					flag = false;
+					break;
+				}
+			}
+
+		}
+		else {
+			kolumna = GiveRandom(0, 10);
+			wiersz = GiveRandom(0, 10 - maszty + 1);
+			for (int i = 0; i < maszty; i++) {
+				if (plansza[wiersz + i][kolumna] != 0) {
+					flag = false;
+					break;
+				}
+			}
+			//plansza[10-maszty][9]
+		}
+	}
+
+	if (poziomo == 1)
+	{
+		//plansza[9][10-maszty]
+		for (int j = - 1; j <= 1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz+j, kolumna - 1))
+			{
+				plansza[wiersz+j][kolumna - 1] = OTOCZENIE;
+			}
+		}
+		for (int i = 0; i < maszty; i++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + i))
+			{
+				plansza[wiersz - 1][kolumna + i] = OTOCZENIE;
+			}
+
+			plansza[wiersz][kolumna + i] = maszty;
+			//lista_statkow[x].wsp[i][0] = wiersz;
+			//lista_statkow[x].wsp[i][1] = kolumna+i;
+
+			if (CzyNalezyDoPlanszy(wiersz + 1, kolumna + i))
+			{
+				plansza[wiersz + 1][kolumna + i] = OTOCZENIE;
+			}
+		}
+		for (int j = - 1; j <= + 1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz+j, kolumna + maszty))
+			{
+				plansza[wiersz+j][kolumna + maszty] = OTOCZENIE;
+			}
+		}
+
+	}
+	else
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + j))
+			{
+				plansza[wiersz - 1][kolumna + j] = OTOCZENIE;
+			}
+		}
+
+		for (int i = 0; i < maszty; i++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz + i, kolumna - 1))
+			{
+				plansza[wiersz + i ][kolumna - 1] = OTOCZENIE;
+			}
+
+			plansza[wiersz + i][kolumna] = maszty;
+			//lista_statkow[x].wsp[i][0] = wiersz + i;
+			//lista_statkow[x].wsp[i][1] = kolumna;
+
+			if (CzyNalezyDoPlanszy(wiersz + i, kolumna + 1))
+			{
+				plansza[wiersz + i][kolumna + 1] = OTOCZENIE;
+			}
+		}
+
+		for (int j = -1; j <= +1; j++)
+		{
+			if (CzyNalezyDoPlanszy(wiersz + maszty, kolumna + j))
+			{
+				plansza[wiersz + maszty][kolumna + j] = OTOCZENIE;
+			}
+		}
+
+		//plansza[10-maszty][9]
+	}
+}
+
+void RozrysujStatki(char plansza[10][10])
+{
+	int statki[4] = { 4, 3, 2, 1 };
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < statki[i]; j++) {
+			TworzStatek(i+1, plansza);
+		}
+	}
+	/*for (int i = 0; i < 10; i++) {
+		if (i < 4) {
+			lista_statkow[i].maszty = 1;
+		}
+		else {
+			if (i < 7) {
+				lista_statkow[i].maszty = 2;
+			}
+			else {
+				if (i < 9) {
+					lista_statkow[i].maszty = 3;
+				}
+				else {
+					lista_statkow[i].maszty = 4;
+				}
+			}
+		}
+		TworzStatek(i, lista_statkow[i].maszty, plansza);
+	}*/
+
+}
+
+//void Komunikat(int typ)
+//{
+//	if (typ != STATEK)
+//	{
+//		printf("Pudlo\n");
+//	}
+//}
+
+//bool SprawdzanieOJeden(int w, int k, char plansza[10][10])
+//{
+//	for (int i = -1; i <= 1; i++)
+//	{
+//		for (int j = -1; j <= 1; j++)
+//		{
+//			if (i == 0 && j == 0) {
+//				continue;
+//			}
+//			if (CzyNalezyDoPlanszy(w + i, k + i))
+//			{
+//				if ((plansza[w + i][k + j] == STATEK)|| (plansza[w + i][k + j] == TRAFIONY))
+//				{
+//					return true;
+//				}
+//			}
+//		}
+//	}
+//	return false;
+//}
+
+
+bool CzyZatopiony(int maszty, int wiersz, int kolumna, char plansza[10][10])
+{
+	// sprawdzam czy zatopiony
+		// w czterech kierunkach
+		// jesli znajde jeszcze jeden klocek o wartosci masztu oddalony o maszty-1 i nie napotkam pudla ani pustego to jest zatopiony
+
+	// w gore
+	for (int i = 0; i < maszty; i++)
+	{
+		if (CzyNalezyDoPlanszy(wiersz - i, kolumna))
+		{
+			if (plansza[wiersz - i][kolumna] == PUDLO || plansza[wiersz - i][kolumna] == OTOCZENIE)
+			{
+				break;
+
+			}
+			else if (plansza[wiersz - i][kolumna] == maszty)
+			{
+				return false;
+			}
+		}
+	}
+	for (int i = 0; i < maszty; i++)
+	{
+		if (CzyNalezyDoPlanszy(wiersz + i, kolumna))
+		{
+			if (plansza[wiersz + i][kolumna] == PUDLO || plansza[wiersz + i][kolumna] == OTOCZENIE)
+			{
+				break;
+
+			}
+			else if (plansza[wiersz + i][kolumna] == maszty)
+			{
+				return false;
+			}
+		}
+	}
+	for (int i = 0; i < maszty; i++)
+	{
+		if (CzyNalezyDoPlanszy(wiersz, kolumna - i))
+		{
+			if (plansza[wiersz][kolumna - i] == PUDLO || plansza[wiersz][kolumna - i] == OTOCZENIE)
+			{
+				break;
+
+			}
+			else if (plansza[wiersz][kolumna - i] == maszty)
+			{
+				return false;
+			}
+		}
+	}
+	for (int i = 0; i < maszty; i++)
+	{
+		if (CzyNalezyDoPlanszy(wiersz, kolumna + i))
+		{
+			if (plansza[wiersz][kolumna + i] == PUDLO || plansza[wiersz][kolumna + i] == OTOCZENIE)
+			{
+				break;
+
+			}
+			else if (plansza[wiersz][kolumna + i] == maszty)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+
+
+
+
+// plansza gracza
+void StrzelanieKomputera0(char plansza[10][10]) {
+
+	int wiersz = GiveRandom(0, 10);
+	int kolumna = GiveRandom(0, 10);
+
+	while (plansza[wiersz][kolumna] >= 8)
+	{
+		wiersz = GiveRandom(0, 10);
+		kolumna = GiveRandom(0, 10);
+
+	}
+	if ((plansza[wiersz][kolumna] == 0) || (plansza[wiersz][kolumna] == 5)) {
+		plansza[wiersz][kolumna] = PUDLO;
+		printf("Pudlo komputera\n");
+	}
+	else {
+		int maszty = plansza[wiersz][kolumna];
+		plansza[wiersz][kolumna] = TRAFIONY;
+
+
+		if (!CzyZatopiony(maszty, wiersz, kolumna, plansza))
+		{
+			//niezatopuiony
+			printf("Komputer trafil w Twoj statek\n");
+
+		}
+		else {
+			//panierowanie
+			int poziomo = 1;
+			while (plansza[wiersz-1][kolumna] == TRAFIONY) {
+				wiersz--;
+				poziomo = 0;
+			}
+			while (plansza[wiersz][kolumna-1] == TRAFIONY) {
+				kolumna--;
+			}
+
+			printf("%d %d %d\n", wiersz, kolumna, poziomo);
+			if (poziomo == 0)
+			{
+				//plansza[9][10-maszty]
+				for (int j = -1; j <= 1; j++)
+				{
+					if (CzyNalezyDoPlanszy(wiersz + j, kolumna - 1))
+					{
+						plansza[wiersz + j][kolumna - 1] = PUDLO;
+					}
+				}
+				for (int i = 0; i < maszty; i++)
+				{
+					if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + i))
+					{
+						plansza[wiersz - 1][kolumna + i] = PUDLO;
+					}
+
+					//lista_statkow[x].wsp[i][0] = wiersz;
+					//lista_statkow[x].wsp[i][1] = kolumna+i;
+
+					if (CzyNalezyDoPlanszy(wiersz + 1, kolumna + i))
+					{
+						plansza[wiersz + 1][kolumna + i] = PUDLO;
+					}
+				}
+				for (int j = -1; j <= +1; j++)
+				{
+					if (CzyNalezyDoPlanszy(wiersz + j, kolumna + maszty))
+					{
+						plansza[wiersz + j][kolumna + maszty] = PUDLO;
+					}
+				}
+
+			}
+			else
+			{
+				for (int j = -1; j <= 1; j++)
+				{
+					if (CzyNalezyDoPlanszy(wiersz - 1, kolumna + j))
+					{
+						plansza[wiersz - 1][kolumna + j] = PUDLO;
+					}
+				}
+
+				for (int i = 0; i < maszty; i++)
+				{
+					if (CzyNalezyDoPlanszy(wiersz + i, kolumna - 1))
+					{
+						plansza[wiersz + i][kolumna - 1] = PUDLO;
+					}
+
+					//lista_statkow[x].wsp[i][0] = wiersz + i;
+					//lista_statkow[x].wsp[i][1] = kolumna;
+
+					if (CzyNalezyDoPlanszy(wiersz + i, kolumna + 1))
+					{
+						plansza[wiersz + i][kolumna + 1] = PUDLO;
+					}
+				}
+
+				for (int j = -1; j <= +1; j++)
+				{
+					if (CzyNalezyDoPlanszy(wiersz + maszty, kolumna + j))
+					{
+						plansza[wiersz + maszty][kolumna + j] = PUDLO;
+					}
+				}
+
+				//plansza[10-maszty][9]
+			}
+			printf("Komputer zatopil Ci statek\n");
+		}
+		
+	}
+	
+}
+
+struct pozostalo_statkow {
+	int gracza;
+	int komputera;
+};
+
 void Statki() {
 
+	// 4 x 1   3 x 2   2 x 3 1 x 4
+
+
+	struct pozostalo_statkow P = { 20, 20 };
+
+	//0 nie ma, 1 jest, 2 nic nie moze byc
 	char plansza_gracza[10][10] =
 	{
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177}
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0}
 	};
 
 	char plansza_komputera[10][10] =
 	{
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177},
-			{177,177,177,177,177,177,177,177,177,177}
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0}
 	};
 	char plansza_strzalow[10][10] =
 	{
@@ -378,8 +824,17 @@ void Statki() {
 			{'x','x','x','x','x','x','x','x','x','x'},
 			{'x','x','x','x','x','x','x','x','x','x'}
 	};
-
-	WypiszStatki(plansza_gracza, plansza_strzalow);
+	RozrysujStatki(plansza_gracza);
+	RozrysujStatki(plansza_komputera);
+	WypiszStatki(plansza_gracza, plansza_komputera);
+	int a;
+	while (true) {
+		StrzelanieKomputera0(plansza_gracza);
+		WypiszStatki(plansza_gracza, plansza_komputera);
+		scanf(" %d", &a);
+	}
+	WypiszStatki(plansza_gracza, plansza_komputera);
+	printf("koniec");
 }
 
 int main()
