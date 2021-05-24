@@ -1356,6 +1356,8 @@ bool CzyKoniecKulek(char plansza[10][10], struct ostatni_strzal *O)
 }
 
 void Kulki() {
+
+    int poziom = GetLevel();
     char plansza[10][10] =
     {
             {0,0,0,0,0,0,0,0,0,0},
@@ -1384,7 +1386,12 @@ void Kulki() {
         WypiszKulki(plansza);
         printf("\n\nKomputer strzela");
         Wait(3);
-        KulkaKomputera1(wskO, plansza);
+        if (poziom == 0) {
+            KulkaKomputera0(wskO, plansza);
+        }
+        else {
+            KulkaKomputera1(wskO, plansza);
+        }
         if (CzyKoniecKulek(plansza, wskO))
         {
             WypiszKulki(plansza);
