@@ -47,9 +47,9 @@ void SetWindow(int Width, int Height)
 	Rect.Bottom = Height - 1;
 	Rect.Right = Width - 1;
 
-	HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle 
-	SetConsoleScreenBufferSize(Handle, coord);            // Set Buffer Size 
-	SetConsoleWindowInfo(Handle, TRUE, &Rect);            // Set Window Size 
+	HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle
+	SetConsoleScreenBufferSize(Handle, coord);            // Set Buffer Size
+	SetConsoleWindowInfo(Handle, TRUE, &Rect);            // Set Window Size
 }
 
 void SetConsoleColor(int k)
@@ -59,7 +59,7 @@ void SetConsoleColor(int k)
 }
 
 int GiveRandom(int start, int ile_liczb) {
-	
+
 
 	return (rand()%ile_liczb) + start;
 
@@ -72,7 +72,7 @@ int GetLevel() {
 	scanf(" %d", &level);
 	system("cls");
 	return level;
-	
+
 }
 
 void Wait(int time) {
@@ -224,10 +224,12 @@ void Wisielec()
 							"PROGRAMOWANIE",
 							"NISKOPOZIOMOWE",
 							"MATEMATYKA",
-							"GUMIAKI"
+							"PROBABILISTYKA",
+                            "ALGORYTMIKA",
+                            "ELEKTONIKA"
 	};
 	char haslo[2][30];  //{ "INFA", "0000" }
-	strcpy(haslo[0], baza_hasel[GiveRandom(0,5)]);
+	strcpy(haslo[0], baza_hasel[GiveRandom(0,7)]);
 	memset(haslo[1], '0', strlen(haslo[0]) * sizeof(char));
 	while (1) {
 		WypiszHaslo(haslo);
@@ -248,7 +250,7 @@ void Wisielec()
 		if (poziom == 0) {
 			WypiszLitery(alfabet);
 		}
-		
+
 		WczytajLitere(poziom, alfabet);
 		OdkryjLitere(proby, haslo, alfabet);
 		system("cls");
@@ -309,7 +311,7 @@ void WczytajWybor(int &wiersz, int &kolumna, char plansza[3][3]) {
 	char wsp1, wsp2;
 	printf("Podaj wspolrzedne: ");
 	scanf(" %c%c", &wsp1, &wsp2);
-	
+
 	if ((wsp1 > 47) && (wsp1 < 51)) {
 		wiersz = (int)wsp1 - 48;
 		kolumna = (int)wsp2 - 97;
@@ -508,7 +510,7 @@ void Kolko() {
     struct ostatni_ruch* wskO = &O;
     (*wskO).w = -1;
     (*wskO).k = -1;
-	
+
     if (poziom == 0) {
         while (1)
         {
@@ -593,7 +595,7 @@ void Kolko() {
             }
         }
     }
-	
+
 }
 
 //......................................................
@@ -606,8 +608,8 @@ struct ostatni_strzal {
 
 void Statki();
 
-void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10], struct ostatni_strzal O) {
-
+void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10], struct ostatni_strzal O, int koniec) {
+    system("cls");
     printf("\n    Twoja plansza:\t\t\t  Plansza przeciwnika:\n\n");
     printf("  ");
     for (int g = 0; g < 10; g++) {
@@ -659,42 +661,81 @@ void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10], st
         }
         SetConsoleColor(TEXT_LIGHTGRAY);
         printf("\t\t\t %d ", a);
-
-        for (int b = 0; b < 10; b++) {
-            switch (plansza_strzalow[a][b])
-            {
-            case 9:
-                SetConsoleColor(TEXT_RED);
-                if (O.kto == 0 && O.w == a && O.k == b)
+        if (koniec == false) {
+            for (int b = 0; b < 10; b++) {
+                switch (plansza_strzalow[a][b])
                 {
-                    SetConsoleColor(TEXT_GREEN);
-                }
+                case 9:
+                    SetConsoleColor(TEXT_RED);
+                    if (O.kto == 0 && O.w == a && O.k == b)
+                    {
+                        SetConsoleColor(TEXT_GREEN);
+                    }
 
-                printf("%c ", 35);
-                break;
-            case 8:
-                SetConsoleColor(TEXT_DARKGRAY);
-                if (O.kto == 0 && O.w == a && O.k == b)
-                {
-                    SetConsoleColor(TEXT_GREEN);
-                }
+                    printf("%c ", 35);
+                    break;
+                case 8:
+                    SetConsoleColor(TEXT_DARKGRAY);
+                    if (O.kto == 0 && O.w == a && O.k == b)
+                    {
+                        SetConsoleColor(TEXT_GREEN);
+                    }
 
-                printf("%c ", 207);
-                break;
-            default:
-                SetConsoleColor(TEXT_CYAN);
-                printf("%c ", 177);
-                break;
-            /*case 5:
-                SetConsoleColor(TEXT_CYAN);
-                printf("%c ", 177);
-                break;
-            default:
-                SetConsoleColor(TEXT_YELLOW);
-                printf("%c ", 88);
-                break;*/
+                    printf("%c ", 207);
+                    break;
+                default:
+                    SetConsoleColor(TEXT_CYAN);
+                    printf("%c ", 177);
+                    break;
+                    /*case 5:
+                        SetConsoleColor(TEXT_CYAN);
+                        printf("%c ", 177);
+                        break;
+                    default:
+                        SetConsoleColor(TEXT_YELLOW);
+                        printf("%c ", 88);
+                        break;*/
+                }
+                SetConsoleColor(TEXT_LIGHTGRAY);
             }
-            SetConsoleColor(TEXT_LIGHTGRAY);
+        }
+        else {
+            for (int b = 0; b < 10; b++) {
+                switch (plansza_strzalow[a][b])
+                {
+                case 9:
+
+                    SetConsoleColor(TEXT_RED);
+                    if (O.kto == 1 && O.w == a && O.k == b)
+                    {
+                        SetConsoleColor(TEXT_GREEN);
+                    }
+                    printf("%c ", 35);
+                    break;
+                case 8:
+                    SetConsoleColor(TEXT_DARKGRAY);
+                    if (O.kto == 1 && O.w == a && O.k == b)
+                    {
+                        SetConsoleColor(TEXT_GREEN);
+                    }
+
+                    printf("%c ", 207);
+                    break;
+                case 0:
+                    SetConsoleColor(TEXT_CYAN);
+                    printf("%c ", 177);
+                    break;
+                case 5:
+                    SetConsoleColor(TEXT_CYAN);
+                    printf("%c ", 177);
+                    break;
+                default:
+                    SetConsoleColor(TEXT_YELLOW);
+                    printf("%c ", 88);
+                    break;
+                }
+
+            }
         }
     }
 
@@ -1322,6 +1363,7 @@ void InstrukcjaStatkow() {
 
 }
 
+
 void Statki() {
 
     // 4 x 1   3 x 2   2 x 3 1 x 4
@@ -1387,11 +1429,9 @@ void Statki() {
     bool koniec = false;
     while (!koniec) {
 
-        system("cls");
-        WypiszStatki(plansza_gracza, plansza_komputera, O);
+        WypiszStatki(plansza_gracza, plansza_komputera, O, koniec);
         StrzelanieGracza(plansza_komputera, P, wskO);
-        system("cls");
-        WypiszStatki(plansza_gracza, plansza_komputera, O);
+        WypiszStatki(plansza_gracza, plansza_komputera, O, koniec);
 
 
         printf("\nKomputer strzela");
@@ -1406,6 +1446,7 @@ void Statki() {
 
         koniec = CzyKoniecStatkow(P);
     }
+    WypiszStatki(plansza_gracza, plansza_komputera, O, koniec);
 }
 
 //...............................................
@@ -1458,12 +1499,18 @@ void WypiszKulki(char plansza[10][10]) {
 
 void KulkaGracza(struct ostatni_strzal *O, char plansza[10][10]) {
     int w, k;
-    
-    do {
-        printf("\n\nPodaj wiersz i kolumne rozdzielone spacja: ");
-        scanf(" %d %d", &w, &k);
-
-    } while (!CzyNalezyDoPlanszy(w, k) || !CzyMozliwaKulka(w, k, plansza));
+    w = 0;
+    printf("\n\nPodaj kolumne, do ktorej chcesz wrzucic kulke: ");
+    scanf(" %d", &k);
+    if (!CzyNalezyDoPlanszy(w, k) || plansza[0][k] != 0) {
+        printf("Zla kolumna");
+        Sleep(300);
+        KulkaGracza(O, plansza);
+    }
+    while (plansza[w][k] == 0 && CzyNalezyDoPlanszy(w, k)) {
+        w++;
+    }
+    w--;
 
     //MessageBeep(MB_ICONWARNING);
 
@@ -1690,7 +1737,7 @@ int main()
 	srand((unsigned int)time(NULL));
 	//SetWindow(200, 100);
     MenuGlowne();
-	
+
 	SetConsoleColor(0);
 	return 1;
 }
