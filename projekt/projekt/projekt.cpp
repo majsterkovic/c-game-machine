@@ -30,6 +30,9 @@ struct ostatni_ruch {
 };
 
 void Statki();
+void Kulki();
+void Kolko();
+void Wisielec();
 bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct ostatni_ruch* O, char kto);
 
 void SetWindow(int Width, int Height)
@@ -63,6 +66,7 @@ int GiveRandom(int start, int ile_liczb) {
 }
 
 int GetLevel() {
+    system("cls");
 	int level;
 	printf("[0] Latwy\n[1] Trudny\n\nWybierz poziom trudnosci: ");
 	scanf(" %d", &level);
@@ -78,6 +82,41 @@ void Wait(int time) {
 	}
 	printf("\n");
 
+}
+
+void MenuGlowne() {
+    system("cls");
+
+    printf("Witaj!\nGry do wyboru:\n");
+    SetConsoleColor(TEXT_CYAN);
+    printf("1. Statki\n");
+    SetConsoleColor(TEXT_BROWN);
+    printf("2. Cztery w linii\n");
+    SetConsoleColor(TEXT_MAGENTA);
+    printf("3. Wisielec\n");
+    SetConsoleColor(TEXT_GREEN);
+    printf("4. Kolko i krzyzyk\n\n");
+    SetConsoleColor(TEXT_LIGHTGRAY);
+    printf("Podaj numer gry, w ktora chcesz zagrac: ");
+    int wybor;
+    scanf(" %d", &wybor);
+
+    switch (wybor) {
+    case 1:
+        Statki();
+        break;
+    case 2:
+        Kulki();
+        break;
+    case 3:
+        Wisielec();
+        break;
+    case 4:
+        Kolko();
+        break;
+    default:
+        MenuGlowne();
+    }
 }
 
 
@@ -304,31 +343,16 @@ void LosowanieKomputera0(int &wiersz, int &kolumna, char plansza[3][3], struct o
 
 
 void PierwszyRuchKomputera1(int &wiersz, int &kolumna, char plansza[3][3], struct ostatni_ruch *O) {
-    printf("Pierwszy ruch komputera");
-    int rog = GiveRandom(0, 4);
-    if (rog == 0) {
-        wiersz = 0;
-        kolumna = 0;
-    }
-    else if (rog == 1) {
-        wiersz = 0;
-        kolumna = 2;
-    }
-    else if (rog == 2) {
-        wiersz = 2;
-        kolumna = 0;
-    }
-    else {
-        wiersz = 2;
-        kolumna = 2;
-    }
-    printf(" %d %d\n", wiersz, kolumna);
+    //printf("Pierwszy ruch komputera");
+    kolumna = 2 * GiveRandom(0, 2);
+    wiersz = 2 * GiveRandom(0, 2);
+    //printf(" %d %d\n", wiersz, kolumna);
     (*O).w = wiersz;
     (*O).k = kolumna;
 }
 
 void DrugiRuchKomputera1(int& wiersz, int& kolumna, char plansza[3][3], struct ostatni_ruch* O) {
-    printf("Drugi ruch komputera\n");
+    //printf("Drugi ruch komputera\n");
     int w = (*O).w;
     int k = (*O).k;
     int nk = (k == 2) ? k - 2 : k + 2;
@@ -403,6 +427,39 @@ bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct o
             }
         }
     }
+
+    counter = 0;
+    for (int i = 0; i < 3; i++) {
+        if (plansza[i][i] == kto) {
+            counter++;
+        }
+    }
+    if (counter == 2) {
+        for (int i = 0; i < 3; i++) {
+            if (plansza[i][i] == ' ') {
+                wiersz = i;
+                kolumna = i;
+                return true;
+            }
+        }
+    }
+
+    counter = 0;
+    for (int i = 0; i < 3; i++) {
+        if (plansza[i][2-i] == kto) {
+            counter++;
+        }
+    }
+    if (counter == 2) {
+        for (int i = 0; i < 3; i++) {
+            if (plansza[i][2-i] == ' ') {
+                wiersz = i;
+                kolumna = 2-i;
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 
@@ -439,11 +496,6 @@ bool CzyZostaloWolnePole(char plansza[3][3])
     return false;
 }
 
-void Remis()
-{
-    printf("\n\nRemis\n\n");
-}
-
 
 void Kolko() {
     int poziom = GetLevel();
@@ -460,24 +512,28 @@ void Kolko() {
     if (poziom == 0) {
         while (1)
         {
-            if (!CzyZostaloWolnePole) Remis();
             WypiszPlansze(plansza);
 
             WczytajWybor(wiersz, kolumna, plansza);
             if (Ruch(plansza, wiersz, kolumna, GRACZ)) {
                 WypiszPlansze(plansza);
-                printf("Wygrales\n");
+                printf("Wygrales");
                 break;
 
             }
-            if (!CzyZostaloWolnePole) Remis();
+            if (!CzyZostaloWolnePole(plansza))
+            {
+                WypiszPlansze(plansza);
+                printf("Remis");
+                break;
+            }
             WypiszPlansze(plansza);
 
             LosowanieKomputera0(wiersz, kolumna, plansza, wskO);
             Wait(3);
             if (Ruch(plansza, wiersz, kolumna, KOMPUTER)) {
                 WypiszPlansze(plansza);
-                printf("Przegrales\n");
+                printf("Przegrales");
                 break;
             }
         }
@@ -487,7 +543,7 @@ void Kolko() {
         while (1)
         {
             counter++;
-            if (!CzyZostaloWolnePole) Remis();
+
             WypiszPlansze(plansza);
 
             if (plansza[1][1] == 'X') {
@@ -516,18 +572,23 @@ void Kolko() {
             Wait(3);
             if (Ruch(plansza, wiersz, kolumna, KOMPUTER)) {
                 WypiszPlansze(plansza);
-                printf("Przegrales\n");
+                printf("Przegrales");
                 break;
 
             }
-            if (!CzyZostaloWolnePole) Remis();
+            if (!CzyZostaloWolnePole(plansza))
+            {
+                WypiszPlansze(plansza);
+                printf("Remis");
+                break;
+            }
             WypiszPlansze(plansza);
 
-            WczytajWybor(wiersz, kolumna, plansza); //if counter==1, sprawdz czy przeciwnik dal na srodek
+            WczytajWybor(wiersz, kolumna, plansza);
 
             if (Ruch(plansza, wiersz, kolumna, GRACZ)) {
                 WypiszPlansze(plansza);
-                printf("Wygrales\n");
+                printf("Wygrales");
                 break;
             }
         }
@@ -1401,6 +1462,7 @@ void KulkaGracza(struct ostatni_strzal *O, char plansza[10][10]) {
     do {
         printf("\n\nPodaj wiersz i kolumne rozdzielone spacja: ");
         scanf(" %d %d", &w, &k);
+
     } while (!CzyNalezyDoPlanszy(w, k) || !CzyMozliwaKulka(w, k, plansza));
 
     //MessageBeep(MB_ICONWARNING);
@@ -1621,35 +1683,14 @@ void Kulki() {
         }
     }
 
-    
-
 }
 
 int main()
 {
 	srand((unsigned int)time(NULL));
 	//SetWindow(200, 100);
+    MenuGlowne();
 	
-	//printf("Witaj!\n\nGry do wyboru:\n1. Statki\n2. Cztery w linii\n3. Wisielec\n4. Kolko i krzyzyk\n\nPodaj nr gry, w ktora chcesz zagrac: ");
-	//int wybor;
-
-	Wisielec();
-	//Kolko();
-	//Statki();
-    //Kulki();
-	//scanf("%d", &wybor);
-	//switch (wybor) {
-	//case 1:
-	//	//statki();
-	//case 2:
-	//	//kulki();
-	//case 3:
-	//	//Wisielec();
-	//case 4:
-	//	//kolko();
-	//default:
-	//	printf("Podany zly nr gry");
-	//}
 	SetConsoleColor(0);
 	return 1;
 }
