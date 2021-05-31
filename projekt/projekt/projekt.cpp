@@ -17,7 +17,6 @@
 #define TEXT_BLUE 0xB
 
 #define PUSTE 0
-//#define STATEK 1
 #define OTOCZENIE 5
 #define TRAFIONY 9
 #define PUDLO 8
@@ -59,10 +58,7 @@ void SetConsoleColor(int k)
 }
 
 int GiveRandom(int start, int ile_liczb) {
-
-
-	return (rand()%ile_liczb) + start;
-
+    return (rand()%ile_liczb) + start;
 }
 
 int GetLevel() {
@@ -881,9 +877,6 @@ void RozrysujStatki(char plansza[10][10])
 
 }
 
-
-
-
 bool CzyZatopiony(int maszty, int wiersz, int kolumna, char plansza[10][10])
 {
     // sprawdzam czy zatopiony
@@ -958,8 +951,6 @@ struct pozostalo_statkow {
     int gracza;
     int komputera;
 };
-
-
 
 void Obtaczanie(int maszty, int wiersz, int kolumna, char plansza[10][10])
 {

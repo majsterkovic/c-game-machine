@@ -46,53 +46,57 @@ bool Ruch(char plansza[3][3], int wiersz, int kolumna, char znak) {
     return SprawdzWygrana(plansza, wiersz, kolumna, znak);
 }
 
-void WczytajWybor(int &wiersz, int &kolumna, char plansza[3][3]) {
+void WczytajWybor(int *wiersz, int *kolumna, char plansza[3][3]) {
     char wsp1, wsp2;
     printf("Podaj wspolrzedne: ");
     scanf(" %c%c", &wsp1, &wsp2);
 
-    if ((wsp1 > 47) && (wsp1 < 51)) {
-        wiersz = (int)wsp1 - 48;
-        kolumna = (int)wsp2 - 97;
+    if ((wsp1 > 47) && (wsp1 < 51)) { //1. wspolrzedna to liczba
+        *wiersz = (int)wsp1 - 48;
+        *kolumna = (int)wsp2 - 97;
     }
-    else
+    else //1. wspolrzedna to litera
     {
-        wiersz = (int)wsp2 - 48;
-        kolumna = (int)wsp1 - 97;
+        *wiersz = (int)wsp2 - 48;
+        *kolumna = (int)wsp1 - 97;
     }
 
-    if (plansza[wiersz][kolumna] != ' ') {
+    if (*wiersz < 0 || *kolumna < 0 || *kolumna > 2 || *wiersz > 2) {
+        printf("Podano zle wspolrzedne\n"); //wspolrzedne poza zakresem
+        WczytajWybor(wiersz, kolumna, plansza);
+    }
+
+    if (plansza[*wiersz][*kolumna] != ' ') { //wspolrzedne na zajete pole
         printf("Podano zle wspolrzedne\n");
         WczytajWybor(wiersz, kolumna, plansza);
     }
 }
 
 
-void LosowanieKomputera0(int &wiersz, int &kolumna, char plansza[3][3], struct ostatni_ruch* O) {
+void LosowanieKomputera0(int *wiersz, int *kolumna, char plansza[3][3], struct ostatni_ruch* O) {
     if (CzyMozliwyKoniecGry(wiersz, kolumna, plansza, O, 'O')) {
         return;
     }
     if (CzyMozliwyKoniecGry(wiersz, kolumna, plansza, O, 'X')) {
         return;
     }
-    wiersz = GiveRandom(0, 3);
-    kolumna = GiveRandom(0, 3);
-    if (plansza[wiersz][kolumna] != ' ') {
+    *wiersz = GiveRandom(0, 3);
+    *kolumna = GiveRandom(0, 3);
+    if (plansza[*wiersz][*kolumna] != ' ') {
         LosowanieKomputera0(wiersz, kolumna, plansza, O);
     }
 }
 
 
-void PierwszyRuchKomputera1(int &wiersz, int &kolumna, char plansza[3][3], struct ostatni_ruch *O) {
+void PierwszyRuchKomputera1(int *wiersz, int *kolumna, char plansza[3][3], struct ostatni_ruch *O) {
     //printf("Pierwszy ruch komputera");
-    kolumna = 2 * GiveRandom(0, 2);
-    wiersz = 2 * GiveRandom(0, 2);
-    //printf(" %d %d\n", wiersz, kolumna);
-    (*O).w = wiersz;
-    (*O).k = kolumna;
+    *kolumna = 2 * GiveRandom(0, 2);
+    *wiersz = 2 * GiveRandom(0, 2);
+    (*O).w = *wiersz;
+    (*O).k = *kolumna;
 }
 
-void DrugiRuchKomputera1(int& wiersz, int& kolumna, char plansza[3][3], struct ostatni_ruch* O) {
+void DrugiRuchKomputera1(int *wiersz, int *kolumna, char plansza[3][3], struct ostatni_ruch* O) {
     //printf("Drugi ruch komputera\n");
     int w = (*O).w;
     int k = (*O).k;
@@ -101,32 +105,32 @@ void DrugiRuchKomputera1(int& wiersz, int& kolumna, char plansza[3][3], struct o
 
     // sprawdzanie czy gracz blokuje nas poziomo
 
-    if (w == wiersz) {
+    if (w == *wiersz) {
         //plansza[nw][k] = 'O';
-        wiersz = nw;
-        kolumna = k;
+        *wiersz = nw;
+        *kolumna = k;
     }
-    else if (k == kolumna) {
+    else if (k == *kolumna) {
         //plansza[w][nk] = 'O';
-        wiersz = w;
-        kolumna = nk;
+        *wiersz = w;
+        *kolumna = nk;
     }
     else {
-        if (wiersz != 1) {
+        if (*wiersz != 1) {
             //plansza[wiersz][nk] = 'O';
-            kolumna = k;
+            *kolumna = k;
         }
-        else if (kolumna != 1) {
+        else if (*kolumna != 1) {
             //plansza[nw][kolumna] = 'O'
-            wiersz = w;
+            *wiersz = w;
         }
     }
-    (*O).w = wiersz;
-    (*O).k = kolumna;
+    (*O).w = *wiersz;
+    (*O).k = *kolumna;
 
 }
 
-bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct ostatni_ruch* O, char kto) {
+bool CzyMozliwyKoniecGry(int *wiersz, int *kolumna, char plansza[3][3], struct ostatni_ruch* O, char kto) {
     int counter = 0;
     int w;
     int k;
@@ -135,8 +139,8 @@ bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct o
         k = (*O).k;
     }
     else {
-        w = wiersz;
-        k = kolumna;
+        w = *wiersz;
+        k = *kolumna;
     }
     for (int i = 0; i < 3; i++) {
         if (plansza[w][i] == kto) {
@@ -146,8 +150,8 @@ bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct o
     if (counter == 2) {
         for (int i = 0; i < 3; i++) {
             if (plansza[w][i] == ' ') {
-                wiersz = w;
-                kolumna = i;
+                *wiersz = w;
+                *kolumna = i;
                 return true;
             }
         }
@@ -162,8 +166,8 @@ bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct o
     if (counter == 2) {
         for (int i = 0; i < 3; i++) {
             if (plansza[i][k] == ' ') {
-                wiersz = i;
-                kolumna = k;
+                *wiersz = i;
+                *kolumna = k;
                 return true;
             }
         }
@@ -178,8 +182,8 @@ bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct o
     if (counter == 2) {
         for (int i = 0; i < 3; i++) {
             if (plansza[i][i] == ' ') {
-                wiersz = i;
-                kolumna = i;
+                *wiersz = i;
+                *kolumna = i;
                 return true;
             }
         }
@@ -194,8 +198,8 @@ bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct o
     if (counter == 2) {
         for (int i = 0; i < 3; i++) {
             if (plansza[i][2-i] == ' ') {
-                wiersz = i;
-                kolumna = 2-i;
+                *wiersz = i;
+                *kolumna = 2-i;
                 return true;
             }
         }
@@ -204,7 +208,7 @@ bool CzyMozliwyKoniecGry(int& wiersz, int& kolumna, char plansza[3][3], struct o
     return false;
 }
 
-void TrzeciRuchKomputera1(int& wiersz, int& kolumna, char plansza[3][3], struct ostatni_ruch* O)
+void TrzeciRuchKomputera1(int *wiersz, int *kolumna, char plansza[3][3], struct ostatni_ruch* O)
 {
 
     if (CzyMozliwyKoniecGry(wiersz, kolumna, plansza, O, 'X')) {
@@ -212,15 +216,15 @@ void TrzeciRuchKomputera1(int& wiersz, int& kolumna, char plansza[3][3], struct 
     }
 
     do {
-        kolumna = 2 * GiveRandom(0, 2);
-        wiersz = 2 * GiveRandom(0, 2);
-    } while (plansza[wiersz][kolumna] != ' ' || plansza[wiersz][1] != ' ' || plansza[1][kolumna] != ' ');
+        *kolumna = 2 * GiveRandom(0, 2);
+        *wiersz = 2 * GiveRandom(0, 2);
+    } while (plansza[*wiersz][*kolumna] != ' ' || plansza[*wiersz][1] != ' ' || plansza[1][*kolumna] != ' ');
 
 }
 
-void CzwartyRuchKomputera1(int &wiersz, int &kolumna) {
-    wiersz = 1;
-    kolumna = 1;
+void CzwartyRuchKomputera1(int *wiersz, int *kolumna) {
+    *wiersz = 1;
+    *kolumna = 1;
 }
 
 bool CzyZostaloWolnePole(char plansza[3][3])
@@ -242,6 +246,8 @@ void Kolko() {
     int poziom = GetLevel();
     char plansza[3][3];
     int wiersz, kolumna;
+    int *wsk_wiersz = &wiersz;
+    int *wsk_kolumna = &kolumna;
     char KOMPUTER = 'O';
     char GRACZ = 'X';
     memset(&plansza, ' ', sizeof plansza);
@@ -255,7 +261,7 @@ void Kolko() {
         {
             WypiszPlansze(plansza);
 
-            WczytajWybor(wiersz, kolumna, plansza);
+            WczytajWybor(wsk_wiersz, wsk_kolumna, plansza);
             if (Ruch(plansza, wiersz, kolumna, GRACZ)) {
                 WypiszPlansze(plansza);
                 printf("Wygrales");
@@ -270,7 +276,7 @@ void Kolko() {
             }
             WypiszPlansze(plansza);
 
-            LosowanieKomputera0(wiersz, kolumna, plansza, wskO);
+            LosowanieKomputera0(wsk_wiersz, wsk_kolumna, plansza, wskO);
             Wait(3);
             if (Ruch(plansza, wiersz, kolumna, KOMPUTER)) {
                 WypiszPlansze(plansza);
@@ -293,19 +299,19 @@ void Kolko() {
 
             switch (counter) {
                 case 1:
-                    PierwszyRuchKomputera1(wiersz, kolumna, plansza, wskO);
+                    PierwszyRuchKomputera1(wsk_wiersz, wsk_kolumna, plansza, wskO);
                     break;
                 case 2:
-                    DrugiRuchKomputera1(wiersz, kolumna, plansza, wskO);
+                    DrugiRuchKomputera1(wsk_wiersz, wsk_kolumna, plansza, wskO);
                     break;
                 case 3:
-                    TrzeciRuchKomputera1(wiersz, kolumna, plansza, wskO);
+                    TrzeciRuchKomputera1(wsk_wiersz, wsk_kolumna, plansza, wskO);
                     break;
                 case 4:
-                    CzwartyRuchKomputera1(wiersz, kolumna);
+                    CzwartyRuchKomputera1(wsk_wiersz, wsk_kolumna);
                     break;
                 default:
-                    LosowanieKomputera0(wiersz, kolumna, plansza, wskO);
+                    LosowanieKomputera0(wsk_wiersz, wsk_kolumna, plansza, wskO);
                     break;
             }
 
@@ -325,7 +331,7 @@ void Kolko() {
             }
             WypiszPlansze(plansza);
 
-            WczytajWybor(wiersz, kolumna, plansza);
+            WczytajWybor(wsk_wiersz, wsk_kolumna, plansza);
 
             if (Ruch(plansza, wiersz, kolumna, GRACZ)) {
                 WypiszPlansze(plansza);
@@ -334,7 +340,8 @@ void Kolko() {
             }
         }
     }
-    printf("\nNacisnij dowolny klawisz, by wrocic do menu ");
+    SetConsoleColor(TEXT_LIGHTGRAY);
+    printf("\n\nNacisnij dowolny klawisz, by wrocic do menu ");
     _getche();
 
 }

@@ -822,7 +822,9 @@ void Statki() {
         koniec = CzyKoniecStatkow(P);
     }
     WypiszStatki(plansza_gracza, plansza_komputera, O, koniec);
-    printf("\nNacisnij dowolny klawisz, by wrocic do menu ");
+
+    SetConsoleColor(TEXT_LIGHTGRAY);
+    printf("\n\nNacisnij dowolny klawisz, by wrocic do menu ");
     _getche();
 }
 

@@ -278,7 +278,8 @@ void Kulki() {
             break;
         }
     }
-    printf("\nNacisnij dowolny klawisz, by wrocic do menu ");
+    SetConsoleColor(TEXT_LIGHTGRAY);
+    printf("\n\nNacisnij dowolny klawisz, by wrocic do menu ");
     _getche();
 
 }

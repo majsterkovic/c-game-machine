@@ -68,29 +68,6 @@ void MenuGlowne() {
     MenuGlowne();
 }
 
-////kolko
-//struct ostatni_ruch {
-//    int w;
-//    int k;
-//};
-//
-////statki
-//struct ostatni_strzal {
-//    int w;
-//    int k;
-//    int kto;
-//};
-//
-//struct pozostalo_statkow {
-//    int gracza;
-//    int komputera;
-//};
-//
-//struct strzelanie {
-//    int kierunek; // 0 = poziomo  1 = pionowo
-//    int stan;
-//    int trafiony[2];
-//    int maszty;
-//};
+
 
 

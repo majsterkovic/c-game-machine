@@ -65,7 +65,7 @@ void WczytajLitere(int poziom, int alfabet[])
     alfabet[(int)litera - 65]++;
 }
 
-void OdkryjLitere(int &proby, char haslo[2][30], int alfabet[])
+void OdkryjLitere(int *proby, char haslo[2][30], int alfabet[])
 {
     int znaleziono = 0;
     for (int i = 0; i < 26; i++) {
@@ -77,7 +77,7 @@ void OdkryjLitere(int &proby, char haslo[2][30], int alfabet[])
         }
     }
     if (znaleziono == 0) {
-        proby--;
+        (*proby)--;
     }
 }
 
@@ -98,6 +98,7 @@ void Wisielec()
     int alfabet[26];
     memset(alfabet, 0, 26*sizeof(int));
     int proby = 8;
+    int *wsk_proby = &proby;
     char baza_hasel[10][30] = {
             "INFORMATYKA",
             "PROGRAMOWANIE",
@@ -131,11 +132,13 @@ void Wisielec()
         }
 
         WczytajLitere(poziom, alfabet);
-        OdkryjLitere(proby, haslo, alfabet);
+        OdkryjLitere(wsk_proby, haslo, alfabet);
         system("cls");
 
     }
-    printf("\nNacisnij dowolny klawisz, by wrocic do menu ");
+
+    SetConsoleColor(TEXT_LIGHTGRAY);
+    printf("\n\nNacisnij dowolny klawisz, by wrocic do menu ");
     _getche();
 }
 
