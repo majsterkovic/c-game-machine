@@ -84,7 +84,6 @@ void Kolko();
 //statki
 void WypiszStatki(char plansza_gracza[10][10], char plansza_strzalow[10][10], struct ostatni_strzal O, int koniec);
 bool CzyNalezyDoPlanszy(int x, int y);
-void ZerujPlansze(char plansza[10][10]);
 void TworzStatek(int maszty, char plansza[10][10]);
 void RozrysujStatki(char plansza[10][10]);
 bool CzyZatopiony(int maszty, int wiersz, int kolumna, char plansza[10][10]);

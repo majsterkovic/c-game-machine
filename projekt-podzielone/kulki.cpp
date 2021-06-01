@@ -1,5 +1,6 @@
 #include "definicje.h"
 
+//czy w danym polu mozna umiescic kulke
 bool CzyMozliwaKulka(int w, int k, char plansza[10][10]) {
     if (w == 9)
     {
@@ -23,7 +24,7 @@ void WypiszKulki(char plansza[10][10]) {
         printf("%d ", g);
     }
     for (int i = 0; i < 10; i++) {
-        printf("\n%d ", i);
+        printf("\n  ");
         for (int j = 0; j < 10; j++) {
             switch (plansza[i][j]) {
                 case 0:
@@ -51,11 +52,13 @@ void KulkaGracza(struct ostatni_strzal *O, char plansza[10][10]) {
     w = 0;
     printf("\n\nPodaj kolumne, do ktorej chcesz wrzucic kulke: ");
     scanf(" %d", &k);
+    //jesli podano zla kolumne, to pyta o nia jeszcze raz
     if (!CzyNalezyDoPlanszy(w, k) || plansza[0][k] != 0) {
         printf("Zla kolumna");
         Sleep(300);
         KulkaGracza(O, plansza);
     }
+    //obliczanie wiersza
     while (plansza[w][k] == 0 && CzyNalezyDoPlanszy(w, k)) {
         w++;
     }
@@ -67,8 +70,11 @@ void KulkaGracza(struct ostatni_strzal *O, char plansza[10][10]) {
     (*O).k = k;
     (*O).w = w;
     (*O).kto = 1;
+
+    fflush(stdin);
 }
 
+//losowe
 void KulkaKomputera0(struct ostatni_strzal* O, char plansza[10][10]) {
     int w, k;
 
@@ -84,6 +90,7 @@ void KulkaKomputera0(struct ostatni_strzal* O, char plansza[10][10]) {
     (*O).kto = 2;
 }
 
+//obliczanie jaka jest maksymalna liczba kulek w liniach przecinajacych punkt okreslony wspolrzednymi
 int MaxKulekWLinii(int wiersz, int kolumna, char plansza[10][10], int kto) {
     int w = wiersz;
     int k = kolumna;
@@ -201,23 +208,26 @@ void KulkaKomputera1(struct ostatni_strzal* O, char plansza[10][10]) {
     }
 
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10; i++) {
         do {
             tmpw = GiveRandom(0, 10);
-            tmpk = GiveRandom(0, 10);
+            tmpk = i;
         } while (!CzyMozliwaKulka(tmpw, tmpk, plansza));
-        if (MaxKulekWLinii(tmpw, tmpk, plansza, 1) > 3) {
+        //jesli znajdzie dla siebie szanse na wygrana to ja wykorzystuje
+        if (MaxKulekWLinii(tmpw, tmpk, plansza, 2) > 3) {
             w = tmpw;
             k = tmpk;
             break;
-        }
-        else if (MaxKulekWLinii(tmpw, tmpk, plansza, 2) > ile) {
+            //jesli gracz ma szanse na wygrana w nastepnej turze to go blokuje
+        } else if (MaxKulekWLinii(tmpw, tmpk, plansza, 1) > 3) {
+            w = tmpw;
+            k = tmpk;
+            break;
+            //jesli zadne z powyzszych, to stawia tam, gdzie bedzie mial najwiecej kulek w linii
+        } else if (MaxKulekWLinii(tmpw, tmpk, plansza, 2) > ile) {
             ile = MaxKulekWLinii(tmpw, tmpk, plansza, 2);
             w = tmpw;
             k = tmpk;
-            if (ile >= 4) {
-                break;
-            }
         }
     }
     plansza[w][k] = 2;
@@ -226,6 +236,7 @@ void KulkaKomputera1(struct ostatni_strzal* O, char plansza[10][10]) {
     (*O).kto = 2;
 }
 
+//sprawdza, czy gdzies istnieja 4 kulki w linii
 bool CzyKoniecKulek(char plansza[10][10], struct ostatni_strzal *O)
 {
     if (MaxKulekWLinii((*O).w, (*O).k, plansza, (*O).kto) >= 4) {

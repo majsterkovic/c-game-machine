@@ -15,6 +15,7 @@ void WypiszPlansze(char plansza[3][3]) {
     SetConsoleColor(TEXT_LIGHTGRAY);
 }
 
+//zwraca true, jeśli w jednej linii 3 symbole któregoś z graczy
 bool SprawdzWygrana(char plansza[3][3], int w, int k, char znak)
 {
     if ((plansza[w][0] == znak) && (plansza[w][0] == plansza[w][1]) && (plansza[w][1] == plansza[w][2]))
@@ -40,6 +41,7 @@ bool SprawdzWygrana(char plansza[3][3], int w, int k, char znak)
 
 }
 
+//zapisuje współrzędne na planszę i automatycznie sprawdza, czy nie spowodowały one wygranej
 bool Ruch(char plansza[3][3], int wiersz, int kolumna, char znak) {
     plansza[wiersz][kolumna] = znak;
 
@@ -51,6 +53,7 @@ void WczytajWybor(int *wiersz, int *kolumna, char plansza[3][3]) {
     printf("Podaj wspolrzedne: ");
     scanf(" %c%c", &wsp1, &wsp2);
 
+    //mozna wpisac wspolrzedne obojetnie w jakiej kolejnosci
     if ((wsp1 > 47) && (wsp1 < 51)) { //1. wspolrzedna to liczba
         *wiersz = (int)wsp1 - 48;
         *kolumna = (int)wsp2 - 97;
@@ -61,6 +64,7 @@ void WczytajWybor(int *wiersz, int *kolumna, char plansza[3][3]) {
         *kolumna = (int)wsp1 - 97;
     }
 
+    //jesli podano zle wspolrzedne, funkcja wywoluje sie jeszcze raz i ponownie o nie prosi
     if (*wiersz < 0 || *kolumna < 0 || *kolumna > 2 || *wiersz > 2) {
         printf("Podano zle wspolrzedne\n"); //wspolrzedne poza zakresem
         WczytajWybor(wiersz, kolumna, plansza);
@@ -70,16 +74,20 @@ void WczytajWybor(int *wiersz, int *kolumna, char plansza[3][3]) {
         printf("Podano zle wspolrzedne\n");
         WczytajWybor(wiersz, kolumna, plansza);
     }
+    fflush(stdin);
 }
 
 
 void LosowanieKomputera0(int *wiersz, int *kolumna, char plansza[3][3], struct ostatni_ruch* O) {
+    //jesli ma szanse na wygrana po jednym ruchu, to go wykonuje
     if (CzyMozliwyKoniecGry(wiersz, kolumna, plansza, O, 'O')) {
         return;
     }
+    //jeśli gracz może wygrać w nastepnym ruchu, to go blokuje
     if (CzyMozliwyKoniecGry(wiersz, kolumna, plansza, O, 'X')) {
         return;
     }
+    //w pozosyałych przypadkach losowo
     *wiersz = GiveRandom(0, 3);
     *kolumna = GiveRandom(0, 3);
     if (plansza[*wiersz][*kolumna] != ' ') {

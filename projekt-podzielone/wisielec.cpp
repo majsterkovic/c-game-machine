@@ -63,6 +63,7 @@ void WczytajLitere(int poziom, int alfabet[])
         }
     }
     alfabet[(int)litera - 65]++;
+    fflush(stdin);
 }
 
 void OdkryjLitere(int *proby, char haslo[2][30], int alfabet[])
